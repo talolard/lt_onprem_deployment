@@ -1,0 +1,11 @@
+version: '2.4'
+services:
+  server_base:
+      image: 052831428797.dkr.ecr.us-east-1.amazonaws.com/lt_backend:stage
+      environment:
+            DATABASE_URL: deployment-test.ciycbufrxh53.us-east-1.rds.amazonaws.com
+            AWS_DEFAULT_REGION: us-east-1
+            DB_NAME: lighttag
+            SUGGESTIONS_SERVER_URL: http://suggestions:8002/suggest/
+            DJANGO_SETTINGS_MODULE: lighttag.settings.stage
+            DEVMODE: 1

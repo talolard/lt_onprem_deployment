@@ -1,0 +1,59 @@
+version: '2.4'
+
+services:
+    redis:
+      image: redis
+
+    server:
+      volumes:
+              - /var/log/lighttag/stage:/logs
+      environment:
+              - LOGFILE_PATH=/logs/log.jsonl
+      extends:
+        file: server.yml
+        service: server_base
+      depends_on: 
+        - redis
+        - suggestions
+
+      labels:
+                - "traefik.http.services.sserver.loadbalancer.server.port=8000"
+                - "service=backend"
+                  #- "traefik.http.routers.sserver.rule=PathPrefix(`/api`)"
+                - "traefik.http.routers.sserver.rule=HostRegexp(`{subdomain:.+}.lighttag.net`) && PathPrefix(`/api`)"
+                - "traefik.http.routers.sserver.priority=142"
+                - "traefik.weight=10"
+                - "traefik.enable=true"
+
+
+    suggestions:
+
+      extends:
+        file: server.yml
+        service: server_base
+      command: "./docker_start_suggestions.sh"
+
+    celery:
+      depends_on: 
+        - redis
+      extends:
+        file: server.yml
+        service: server_base
+      command: "./docker_start_celery.sh"
+
+    frontend:
+        image: 052831428797.dkr.ecr.us-east-1.amazonaws.com/lt_frontend:stage
+        networks:
+                 - default
+        labels:
+                 - "traefik.http.services.sfrontend.loadbalancer.server.port=5000"
+                 - "traefik.enable=true"
+                 - "traefik.http.routers.sfrontend.rule=PathPrefix(`/`)"
+                 - "traefik.http.routers.sfrontend.rule=HostRegexp(`{subdomain:.+}.lighttag.net`) && PathPrefix(`/`)"
+                 - "traefik.http.routers.sfrontend.priority=102"
+                 - "traefik.http.middlewares.sfrontend-replacepath.replacepath.path=/"
+networks:
+  default:
+    external: 
+      name: gateway
+
