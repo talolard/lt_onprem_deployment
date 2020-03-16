@@ -21,7 +21,7 @@ services:
       labels:
                 - "traefik.http.services.prod-server.loadbalancer.server.port=8000"
                 - "service=backend"
-                - "traefik.http.routers.prod-server.rule=HostRegexp(`{host:.+}.lighttag.io`) && PathPrefix(`/api`)"
+                - "traefik.http.routers.prod-server.rule=HostRegexp(`{host:.+}.lighttag.io`) && (PathPrefix(`/api`) || PathPrefix(`/onboarding`))"
                 - "traefik.http.routers.prod-server.priority=142"
                 - "traefik.weight=10"
                 - "traefik.enable=true"

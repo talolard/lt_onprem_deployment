@@ -20,7 +20,7 @@ services:
                 - "traefik.http.services.sserver.loadbalancer.server.port=8000"
                 - "service=backend"
                   #- "traefik.http.routers.sserver.rule=PathPrefix(`/api`)"
-                - "traefik.http.routers.sserver.rule=HostRegexp(`{subdomain:.+}.lighttag.net`) && PathPrefix(`/api`)"
+                - "traefik.http.routers.sserver.rule=HostRegexp(`{subdomain:.+}.lighttag.net`) && (PathPrefix(`/api`) || PathPrefix(`/onboarding`))"
                 - "traefik.http.routers.sserver.priority=142"
                 - "traefik.weight=10"
                 - "traefik.enable=true"
